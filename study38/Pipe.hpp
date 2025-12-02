@@ -50,6 +50,10 @@ public:
         {
             std::cerr << "open error: " << strerror(errno) << " errno: " << errno << std::endl;
         }
+        else
+        {
+            std::cout<< " open sucess " << std::endl;
+        }
     }
     void Delete()
     {
