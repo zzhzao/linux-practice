@@ -1,0 +1,8 @@
+/home/zzh/linux/cmakeStudy/my_math/build/CMakeFiles/edit_cache.dir
+/home/zzh/linux/cmakeStudy/my_math/build/CMakeFiles/rebuild_cache.dir
+/home/zzh/linux/cmakeStudy/my_math/build/my_lib/CMakeFiles/MyMath.dir
+/home/zzh/linux/cmakeStudy/my_math/build/my_lib/CMakeFiles/edit_cache.dir
+/home/zzh/linux/cmakeStudy/my_math/build/my_lib/CMakeFiles/rebuild_cache.dir
+/home/zzh/linux/cmakeStudy/my_math/build/app/CMakeFiles/main.dir
+/home/zzh/linux/cmakeStudy/my_math/build/app/CMakeFiles/edit_cache.dir
+/home/zzh/linux/cmakeStudy/my_math/build/app/CMakeFiles/rebuild_cache.dir
