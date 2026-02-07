@@ -208,6 +208,8 @@ namespace NS_LOG_MODULE
 
 #define ENABLE_CONSOLE_LOG_STRATEGY() logger.UseConsoleStrategy();
 #define ENABLE_FILE_LOG_STRATEGY() logger.UseFileStrategy();
+
+#define LOG(level) logger(level,__FILE__,__LINE__)
 };
 
 #endif

@@ -72,7 +72,9 @@ namespace NS_THREAD_MODULE
             ToRunning();
             return true;
         }
-        void Join()
+        void 
+        
+        Join()
         {
             if (_joinable)
             {
