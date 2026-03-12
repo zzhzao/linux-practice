@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
         Usage(argv[0]);
         exit(1);
     }
+    ENABLE_CONSOLE_LOG_STRATEGY();
     uint16_t port = std::stoi(argv[1]);
 
     // 2. 定义HTTP协议
