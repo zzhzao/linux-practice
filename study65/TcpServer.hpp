@@ -1,5 +1,5 @@
 #include "Socket.hpp"
-#include "InerAddr.hpp"
+#include "InetAddr.hpp"
 #include "Logger.hpp"
 #include <memory>
 #include <unistd.h>
@@ -19,7 +19,7 @@ public:
           _listensock(std::make_unique<TcpSocket>()),
           _handler(handler)
     {
-        _listensock->BulidTcpSocketMethod(_port);
+        _listensock->BuildTcpSocketMethod(_port);
     }
     void Loop()
     {
@@ -63,11 +63,11 @@ private:
             outbuffer = _handler(inbuffer);
         if (outbuffer.empty())
             return;
-        n = sockfd->Send(inbuffer);
+        n = sockfd->Send(outbuffer);
         if (n <= 0)
         {
             LOG(LogLevel::WARNING) << "send: client quit," << clientaddr.ToString();
-            
+
         }
     }
 

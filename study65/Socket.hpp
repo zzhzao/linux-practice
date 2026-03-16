@@ -6,7 +6,7 @@
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <stdlib.h>
-#include "InerAddr.hpp"
+#include "InetAddr.hpp"
 #include "Logger.hpp"
 namespace NS_SOCKET_MODULE
 {
@@ -35,6 +35,7 @@ namespace NS_SOCKET_MODULE
         virtual int Send(const std::string &in) = 0;
         virtual void Close() = 0;
         virtual bool Connect(InetAddr &addr) = 0;
+
     public:
         virtual std::shared_ptr<Socket> Accepter(InetAddr &clientaddr) = 0;
         void BulidTcpSocketMethod(uint16_t port)
@@ -118,8 +119,8 @@ namespace NS_SOCKET_MODULE
             {
                 inbuffer[n] = 0;
                 *out = inbuffer;
-                return n;
             }
+            return n;
         }
         int Send(const std::string &in) override
         {
@@ -133,14 +134,15 @@ namespace NS_SOCKET_MODULE
                 _sockfd = -1;
             }
         }
-        bool Connect(InetAddr & addr) override
+        bool Connect(InetAddr &addr) override
         {
-            int n = connect(_sockfd,addr.NetAddress(),addr.Len());
-            if(n < 0)
+            int n = connect(_sockfd, addr.NetAddress(), addr.Len());
+            if (n < 0)
                 return false;
             else
                 return true;
         }
+
     private:
         int _sockfd;
     };
