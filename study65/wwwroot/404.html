@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 未找到 · 简单页面</title>
+    <style>
+        /* 极简重置 + 干净排版 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #f9fafc;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.5;
+            color: #1e293b;
+            padding: 1.5rem;
+        }
+
+        .box {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 24px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+            text-align: center;
+            border: 1px solid #e9eef2;
+        }
+
+        /* 简单的大数字 */
+        .four-oh-four {
+            font-size: 7rem;
+            font-weight: 600;
+            line-height: 1;
+            color: #cbd5e1;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.25rem;
+            user-select: none;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 500;
+            margin-bottom: 1rem;
+            color: #0f172a;
+        }
+
+        .message {
+            font-size: 1.1rem;
+            color: #475569;
+            margin-bottom: 2.5rem;
+            border-left: 4px solid #e2e8f0;
+            padding-left: 1.25rem;
+            text-align: left;
+            background: #f8fafc;
+            padding: 1rem 1.25rem;
+            border-radius: 14px;
+        }
+
+        a {
+            display: inline-block;
+            background-color: #1e293b;
+            color: white;
+            text-decoration: none;
+            font-weight: 450;
+            padding: 0.75rem 2rem;
+            border-radius: 40px;
+            font-size: 1rem;
+            transition: background-color 0.2s ease;
+            border: 1px solid #334155;
+        }
+
+        a:hover {
+            background-color: #0f172a;
+            border-color: #1e293b;
+        }
+
+        /* 可选的小灰字 */
+        .small-note {
+            margin-top: 2.2rem;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        hr {
+            border: none;
+            border-top: 1px dashed #d1d9e6;
+            margin: 1.8rem 0 1.5rem 0;
+            width: 80px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <!-- 简单醒目的404数字 -->
+        <div class="four-oh-four">404</div>
+
+        <h1>页面未找到</h1>
+
+        <!-- 简约的说明文字，像便签一样 -->
+        <div class="message">
+            ⚡ 你访问的地址不存在<br>
+            <span style="color:#64748b; font-size:0.95rem;">—— 或者它已经搬家了</span>
+        </div>
+
+        <!-- 只有一个链接：返回首页。干净、直接。 -->
+        <a href="/">← 回到首页</a>
+
+        <hr>
+
+        <!-- 极简装饰，甚至没有多余文案，只有一个小小提示（可选） -->
+        <div class="small-note">
+            ⸻  &nbsp;  check the url  &nbsp; ⸻
+        </div>
+    </div>
+</body>
+</html>

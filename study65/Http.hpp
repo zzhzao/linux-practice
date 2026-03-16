@@ -5,13 +5,15 @@
 #include <unordered_map>
 #include <sstream>
 #include "Logger.hpp"
-#include<fstream>
+#include <fstream>
 const std::string linesep = "\r\n";
 const std::string spaceseq = " ";
 const std::string headersep = ": ";
 const std::string g_http_version = "HTTP/1.1";
 const std::string g_first_page = "index.html";
 const std::string g_wwwroot = "wwwroot";
+const std::string page_404 = "./wwwroot/404.html";
+
 
 using namespace NS_LOG_MODULE;
 class Util
@@ -36,16 +38,16 @@ public:
         }
         return line;
     }
-    static std::string ReadFile(std::string &filename)
+    static std::string ReadFile(const std::string &filename)
     {
         std::ifstream in(filename);
-        if(!in.is_open())
+        if (!in.is_open())
         {
             return std::string();
         }
         std::string content;
         std::string line;
-        while (std::getline(in,line))
+        while (std::getline(in, line))
         {
             content += line;
         }
@@ -68,7 +70,7 @@ private:
         std::stringstream ss(req_line);
         // 以空格作为分割符，拆分
         ss >> _method >> _uri >> _version;
-        if(_uri  == "/")
+        if (_uri == "/")
         {
             _uri += g_first_page;
         }
@@ -142,6 +144,10 @@ public:
     {
         return _uri;
     }
+    std::string RequestContent()
+    {
+        return Util::ReadFile(_uri);
+    }
     ~HttpRequest() {}
 
 private:
@@ -154,34 +160,52 @@ private:
 };
 class HttpResponse
 {
+private:
+    std::string CodeToDesc(int code)
+    {
+        switch (_code)
+        {
+        case 100:
+            return "Continue";
+
+        case 200:
+            return "OK";
+
+        case 404:
+            return "Not Found";
+
+        default:
+            return "Unknown";
+        }
+    }
+
 public:
-    HttpResponse():_version(g_http_version),_code(0),_blank_line(linesep)
+    HttpResponse() : _version(g_http_version), _code(0), _blank_line(linesep)
     {
     }
-    ~HttpResponse()
+    void SetCode(int code)
     {
+        _code = code;
+        _code_desc = CodeToDesc(_code);
     }
-    bool Build(HttpRequest &req)
+    void AddHeader(std::string key, std::string value)
     {
-        std::string target_file = req.Uri();
-        _text = Util::ReadFile(target_file);
-        if(_text.empty())
-        {
-            _code = 404;
-            return false;
-        }
-        else
-        {
-            _code = 200;
-            _code_desc = "OK";
-            return true;
-        }
+        _header[key] = value;
+    }
+    void SetBody(const std::string &content)
+    {
+        _text = content;
+    }
+    int BodeSize()
+    {
+        return _text.size();
+
     }
     std::string Serialize()
     {
         std::string respstr;
         respstr += _version + spaceseq + std::to_string(_code) + spaceseq + _code_desc + linesep;
-        for(auto &header : _header)
+        for (auto &header : _header)
         {
             std::string line = header.first + headersep + header.second + linesep;
             respstr += line;
@@ -192,11 +216,12 @@ public:
 
         return respstr;
     }
+
 private:
     std::string _version;
     int _code;
     std::string _code_desc;
-    std::unordered_map<std::string,std::string> _header;
+    std::unordered_map<std::string, std::string> _header;
     std::string _blank_line;
     std::string _text;
 };
@@ -212,10 +237,21 @@ public:
 
         // 根据请求生成结果化的 resp
         HttpResponse http_resp;
-        http_resp.Build(http_req);
+        std::string content = http_req.RequestContent();
+        if(content.empty())
+        {
+            http_resp.SetCode(404);
+            http_resp.SetBody(Util::ReadFile(page_404));
+            http_resp.AddHeader("Content-Length", std::to_string(http_resp.BodeSize()));
+        }
+        else{
+            http_resp.SetCode(200);
+            http_resp.AddHeader("Content-Length", std::to_string(content.size()));
+            http_resp.SetBody(content);
+        }
+
 
         return http_resp.Serialize();
-
     }
 
     HttpProtocol() {}
@@ -223,4 +259,3 @@ public:
 
 private:
 };
-

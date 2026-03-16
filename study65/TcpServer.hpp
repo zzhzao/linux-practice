@@ -19,7 +19,7 @@ public:
           _listensock(std::make_unique<TcpSocket>()),
           _handler(handler)
     {
-        _listensock->BuildTcpSocketMethod(_port);
+        _listensock->BulidTcpSocketMethod(_port);
     }
     void Loop()
     {
