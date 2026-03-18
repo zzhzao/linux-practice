@@ -38,6 +38,7 @@ namespace NS_SOCKET_MODULE
 
     public:
         virtual std::shared_ptr<Socket> Accepter(InetAddr &clientaddr) = 0;
+        
         void BulidTcpSocketMethod(uint16_t port)
         {
             CreateSocketOrDie();

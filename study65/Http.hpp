@@ -240,13 +240,16 @@ public:
         std::string content = http_req.RequestContent();
         if(content.empty())
         {
-            http_resp.SetCode(404);
-            http_resp.SetBody(Util::ReadFile(page_404));
-            http_resp.AddHeader("Content-Length", std::to_string(http_resp.BodeSize()));
+            // http_resp.SetCode(404);
+            // http_resp.SetBody(Util::ReadFile(page_404));
+            // http_resp.AddHeader("Content-Length", std::to_string(http_resp.BodeSize()));
+            http_resp.SetCode(302);
+            http_resp.AddHeader("Location", g_first_page);
         }
         else{
             http_resp.SetCode(200);
             http_resp.AddHeader("Content-Length", std::to_string(content.size()));
+            http_resp.AddHeader("Connection", "close");
             http_resp.SetBody(content);
         }
 

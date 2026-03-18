@@ -16,6 +16,7 @@ public:
     InetAddr()
     {
     }
+    
     InetAddr(const struct sockaddr_in &address) : _address(address), _len(sizeof(address))
     {
         // _ip = inet_ntoa(_address.sin_addr);
