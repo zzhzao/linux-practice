@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>注册 - 个人博客</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 450px;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .header a {
+      color: white;
+      text-decoration: none;
+      font-size: 28px;
+      font-weight: 700;
+      opacity: 0.9;
+      transition: opacity 0.3s;
+    }
+
+    .header a:hover {
+      opacity: 1;
+    }
+
+    .register-card {
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+
+    .register-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .register-subtitle {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #666;
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 15px;
+      transition: all 0.3s;
+      outline: none;
+    }
+
+    .form-group input:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-group input::placeholder {
+      color: #bbb;
+      font-size: 14px;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .password-strength {
+      margin-top: 5px;
+      display: flex;
+      gap: 5px;
+    }
+
+    .strength-bar {
+      height: 4px;
+      flex: 1;
+      background: #e0e0e0;
+      border-radius: 2px;
+      transition: background 0.3s;
+    }
+
+    .strength-bar.active:nth-child(1) { background: #ff4444; }
+    .strength-bar.active:nth-child(2) { background: #ffbb33; }
+    .strength-bar.active:nth-child(3) { background: #00C851; }
+
+    .terms {
+      margin: 25px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .terms input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    .terms a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .terms a:hover {
+      text-decoration: underline;
+    }
+
+    .register-button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .register-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+    }
+
+    .register-button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .login-link {
+      text-align: center;
+      margin-top: 25px;
+      color: #999;
+      font-size: 14px;
+    }
+
+    .login-link a {
+      color: #667eea;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      color: #ff4444;
+      font-size: 13px;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="/">✨ 轻博客</a>
+    </div>
+
+    <div class="register-card">
+      <h1 class="register-title">创建账号</h1>
+      <p class="register-subtitle">加入我们，开始你的创作之旅</p>
+
+      <form id="registerForm" action="/api/getprocutlist" method="POST">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">名字</label>
+            <input 
+              type="text" 
+              id="firstName" 
+              name="firstName" 
+              placeholder="张"
+              required
+            >
+          </div>
+
+          <div class="form-group">
+            <label for="lastName">姓氏</label>
+            <input 
+              type="text" 
+              id="lastName" 
+              name="lastName" 
+              placeholder="三"
+              required
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="username">用户名</label>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            placeholder="zhangsan123"
+            required
+          >
+          <div class="error-message" id="usernameError">用户名已存在</div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">邮箱</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="your@email.com"
+            required
+          >
+          <div class="error-message" id="emailError">邮箱格式不正确</div>
+        </div>
+
+        <div class="form-group">
+          <label for="password">密码</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="至少8位字符"
+            required
+            oninput="checkPasswordStrength(this.value)"
+          >
+          <div class="password-strength">
+            <div class="strength-bar" id="strength1"></div>
+            <div class="strength-bar" id="strength2"></div>
+            <div class="strength-bar" id="strength3"></div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">确认密码</label>
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            name="confirmPassword" 
+            placeholder="再次输入密码"
+            required
+            oninput="checkPasswordMatch(this.value)"
+          >
+          <div class="error-message" id="passwordError">两次密码不一致</div>
+        </div>
+
+        <label class="terms">
+          <input type="checkbox" name="terms" id="terms" required>
+          我已阅读并同意 <a href="/terms">服务条款</a> 和 <a href="/privacy">隐私政策</a>
+        </label>
+
+        <button type="submit" class="register-button" id="registerBtn">注 册</button>
+
+        <div class="login-link">
+          已有账号？ <a href="/login.html">立即登录</a>
+          已有账号？ <a href="/">返回首页</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    function checkPasswordStrength(password) {
+      const bars = [
+        document.getElementById('strength1'),
+        document.getElementById('strength2'),
+        document.getElementById('strength3')
+      ];
+      
+      // 重置所有条
+      bars.forEach(bar => bar.classList.remove('active'));
+      
+      if (!password) return;
+      
+      let strength = 0;
+      
+      // 长度检查
+      if (password.length >= 8) strength++;
+      
+      // 包含数字和字母
+      if (/[0-9]/.test(password) && /[a-zA-Z]/.test(password)) strength++;
+      
+      // 包含特殊字符
+      if (/[!@#$%^&*]/.test(password)) strength++;
+      
+      // 激活对应强度的条
+      for (let i = 0; i < strength; i++) {
+        bars[i].classList.add('active');
+      }
+    }
+
+    function checkPasswordMatch(confirmPassword) {
+      const password = document.getElementById('password').value;
+      const errorElement = document.getElementById('passwordError');
+      
+      if (confirmPassword && password !== confirmPassword) {
+        errorElement.classList.add('show');
+      } else {
+        errorElement.classList.remove('show');
+      }
+    }
+
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+
+    function handleRegister(event) {
+      event.preventDefault();
+      
+      const firstName = document.getElementById('firstName').value;
+      const lastName = document.getElementById('lastName').value;
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+      const termsAccepted = document.getElementById('terms').checked;
+
+      // 验证所有字段
+      if (!firstName || !lastName || !username || !email || !password || !confirmPassword) {
+        alert('请填写所有字段');
+        return false;
+      }
+
+      // 验证邮箱格式
+      if (!validateEmail(email)) {
+        document.getElementById('emailError').classList.add('show');
+        return false;
+      } else {
+        document.getElementById('emailError').classList.remove('show');
+      }
+
+      // 验证密码长度
+      if (password.length < 8) {
+        alert('密码长度不能少于8位');
+        return false;
+      }
+
+      // 验证密码一致性
+      if (password !== confirmPassword) {
+        document.getElementById('passwordError').classList.add('show');
+        return false;
+      }
+
+      // 验证是否同意条款
+      if (!termsAccepted) {
+        alert('请阅读并同意服务条款和隐私政策');
+        return false;
+      }
+
+      // 模拟注册请求
+      const userData = {
+        name: `${firstName} ${lastName}`,
+        username,
+        email,
+        password
+      };
+      
+      console.log('注册信息：', userData);
+      alert('注册成功！请登录 (演示模式)');
+      
+      // 实际项目中，这里会发送请求到服务器
+      // window.location.href = '/login';
+      
+      return false;
+    }
+
+    // 用户名实时检查（模拟）
+    document.getElementById('username').addEventListener('input', function(e) {
+      const username = e.target.value;
+      const errorElement = document.getElementById('usernameError');
+      
+      // 模拟检查用户名是否可用
+      if (username.toLowerCase() === 'admin' || username.toLowerCase() === 'root') {
+        errorElement.classList.add('show');
+      } else {
+        errorElement.classList.remove('show');
+      }
+    });
+  </script>
+</body>
+</html>

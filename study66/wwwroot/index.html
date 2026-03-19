@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>炫酷游戏 · 暗域降临</title>
+    <!-- 使用现代字体 & Font Awesome 图标库 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        /* 平滑滚动 + 自定义光标 (未来感) */
+        html {
+            scroll-behavior: smooth;
+            cursor: crosshair;
+        }
+
+        body {
+            min-height: 100vh;
+            background: radial-gradient(circle at 30% 10%, #0b0d1e, #030514);
+            color: #e0f2fe;
+            line-height: 1.5;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 炫酷动态粒子网格背景 (canvas 用绝对定位垫底) */
+        #cyber-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;  /* 让鼠标事件穿透到内容 */
+            opacity: 0.6;
+        }
+
+        /* 主要内容容器，放在canvas之上 */
+        .wrapper {
+            position: relative;
+            z-index: 5;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 3rem;
+            backdrop-filter: blur(2px);
+        }
+
+        /* 霓虹文字特效 */
+        .glow {
+            text-shadow: 0 0 5px #00f7ff, 0 0 15px #00a6ff, 0 0 30px #0044ff;
+        }
+
+        /* 导航栏 赛博风格 */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0 2rem 0;
+            border-bottom: 1px solid rgba(0, 255, 255, 0.25);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 2.2rem;
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #a5f0ff, #6b4eff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 12px #3a86ff);
+        }
+        .logo i {
+            font-size: 2rem;
+            margin-right: 8px;
+            color: #f0f;
+            -webkit-text-fill-color: initial;
+            background: none;
+            filter: drop-shadow(0 0 8px magenta);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        .nav-links a {
+            color: #b2f0ff;
+            text-decoration: none;
+            font-weight: 500;
+            letter-spacing: 2px;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .nav-links a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 2px;
+            background: #0ff;
+            transition: left 0.3s;
+        }
+        .nav-links a:hover::before {
+            left: 0;
+        }
+        .nav-links a:hover {
+            color: white;
+            text-shadow: 0 0 8px cyan;
+            border-color: rgba(0, 255, 255, 0.5);
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+        }
+
+        /* 主视觉区域 — 核心游戏标题 */
+        .hero {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding: 3rem 1rem 5rem 1rem;
+        }
+
+        .game-badge {
+            background: rgba(10, 20, 40, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 255, 255, 0.6);
+            border-radius: 100px;
+            padding: 0.5rem 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            letter-spacing: 4px;
+            color: #aaf0ff;
+            box-shadow: 0 0 20px rgba(0, 255, 200, 0.5);
+        }
+
+        .hero h1 {
+            font-size: 5.5rem;
+            font-weight: 900;
+            line-height: 1.1;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #fff, #a0e9ff, #c96bff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px #0099ff);
+            margin-bottom: 1rem;
+        }
+
+        .hero h1 span {
+            display: block;
+            font-size: 2.8rem;
+            background: none;
+            -webkit-text-fill-color: white;
+            text-shadow: 0 0 15px magenta, 0 0 30px blue;
+            letter-spacing: 8px;
+        }
+
+        .hero p {
+            max-width: 700px;
+            font-size: 1.3rem;
+            color: #cef2ff;
+            text-shadow: 0 0 5px #0af;
+            background: rgba(2, 10, 20, 0.3);
+            backdrop-filter: blur(4px);
+            padding: 1.5rem 2.5rem;
+            border-radius: 60px;
+            border: 1px solid rgba(100, 200, 255, 0.4);
+            margin: 2rem 0;
+        }
+
+        /* 炫酷的霓虹按钮 */
+        .cta-button {
+            background: none;
+            border: 2px solid #0ff;
+            color: #0ff;
+            font-size: 1.5rem;
+            font-weight: 700;
+            padding: 1rem 3rem;
+            border-radius: 60px;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 0 15px cyan, inset 0 0 10px cyan;
+            backdrop-filter: blur(10px);
+            background: rgba(0, 255, 255, 0.05);
+        }
+        .cta-button:hover {
+            background: cyan;
+            color: #000;
+            font-weight: 900;
+            box-shadow: 0 0 40px cyan, 0 0 80px blue;
+            border-color: white;
+            transform: scale(1.05);
+        }
+
+        /* 特色游戏卡片——网格 */
+        .section-title {
+            font-size: 2.8rem;
+            text-align: center;
+            margin: 4rem 0 2rem;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+            white-space: nowrap;
+        }
+        .section-title i {
+            color: #ff66ff;
+            margin: 0 1rem;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 120%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, cyan, magenta, transparent);
+            margin-top: 5px;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        /* 卡片 3D 炫光效果 */
+        .game-card {
+            background: rgba(8, 15, 30, 0.45);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 255, 255, 0.3);
+            border-radius: 32px;
+            padding: 2rem 1.5rem;
+            transition: all 0.25s ease-in-out;
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.6s;
+        }
+
+        .game-card:hover::after {
+            left: 100%;
+        }
+
+        .game-card:hover {
+            border-color: #f0f;
+            box-shadow: 0 0 25px cyan, 0 0 40px magenta;
+            transform: translateY(-15px) scale(1.02);
+            background: rgba(10, 20, 40, 0.7);
+        }
+
+        .card-icon {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            filter: drop-shadow(0 0 15px currentColor);
+        }
+        .game-card:nth-child(1) .card-icon { color: #ffb3ff; } 
+        .game-card:nth-child(2) .card-icon { color: #aaffaa; } 
+        .game-card:nth-child(3) .card-icon { color: #ffaa88; } 
+        .game-card:nth-child(4) .card-icon { color: #88ccff; } 
+
+        .game-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #b0f0ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .game-card p {
+            color: #b5d8ff;
+            font-size: 1rem;
+            margin: 0.5rem 0 1.5rem;
+            flex: 1;
+        }
+
+        .meta-tags {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+        .tag {
+            background: rgba(0, 200, 255, 0.15);
+            border: 1px solid #0ff;
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #b6ffff;
+            box-shadow: 0 0 6px cyan;
+        }
+
+        /* 动态统计条 */
+        .live-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin: 4rem 0;
+            flex-wrap: wrap;
+        }
+        .stat-item {
+            text-align: center;
+            background: rgba(0, 15, 30, 0.6);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 1.5rem 2.5rem;
+            border: 1px solid rgba(0, 255, 200, 0.6);
+            min-width: 160px;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.4);
+        }
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ff66ff, #00ffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1;
+        }
+        .stat-label {
+            font-size: 1rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #acffff;
+        }
+
+        /* 预购条幅 全息风格 */
+        .preorder-banner {
+            background: linear-gradient(120deg, #110033, #000a1a);
+            border: 2px solid;
+            border-image: linear-gradient(45deg, #f0f, #0ff) 1;
+            border-radius: 60px;
+            padding: 2.5rem 3rem;
+            margin: 4rem 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+            box-shadow: 0 0 40px #6600ff;
+            backdrop-filter: blur(6px);
+        }
+        .preorder-text {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .preorder-text small {
+            font-size: 1rem;
+            color: #aaddff;
+            display: block;
+        }
+        .neo-button {
+            background: transparent;
+            border: 2px solid #f0f;
+            color: #f0f;
+            padding: 1rem 3rem;
+            font-size: 1.5rem;
+            border-radius: 60px;
+            font-weight: 800;
+            letter-spacing: 4px;
+            transition: 0.2s;
+            box-shadow: 0 0 15px magenta;
+            cursor: pointer;
+        }
+        .neo-button:hover {
+            background: magenta;
+            color: black;
+            box-shadow: 0 0 60px magenta, 0 0 120px cyan;
+            border-color: white;
+        }
+
+        /* 底部 酷炫网格 */
+        footer {
+            margin-top: 5rem;
+            padding: 2rem 0;
+            border-top: 1px solid rgba(0, 255, 255, 0.3);
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 2rem;
+            color: #8bb9ff;
+        }
+        .social i {
+            font-size: 1.8rem;
+            margin: 0 0.8rem;
+            transition: 0.2s;
+            color: #b0f0ff;
+        }
+        .social i:hover {
+            color: #ff66ff;
+            text-shadow: 0 0 20px magenta;
+            transform: scale(1.2);
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 700px) {
+            .hero h1 { font-size: 3rem; }
+            .hero h1 span { font-size: 1.8rem; }
+            .wrapper { padding: 1rem 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- canvas 炫酷粒子网格背景 (动态生成) -->
+    <canvas id="cyber-canvas"></canvas>
+
+    <div class="wrapper">
+        <!-- 导航栏 -->
+        <nav class="navbar">
+            <div class="logo">
+                <i class="fas fa-skull"></i> NEBULA<span style="color:cyan;">//</span>CORE
+            </div>
+            <div class="nav-links">
+                <a href="#">HOME</a>
+                <a href="/register.html" >注册</a>
+                <a href="/Login.html">登陆</a>
+                <a href="#">LORE</a>
+                <a href="#">ESPORTS</a>
+                <a href="#">GEAR</a>
+            </div>
+        </nav>
+
+        <!-- HERO 主视觉 炫酷游戏标题 -->
+        <section class="hero">
+            <div class="game-badge">
+                <i class="fas fa-bolt"></i> LIMITED EVENT // CYBER EDGE <i class="fas fa-bolt"></i>
+            </div>
+            <h1>
+                EDGE: NIGHT<span>REBELLION</span>
+            </h1>
+            <p>
+                <i class="fas fa-crown" style="color:gold;"></i> 
+                Enter the next-gen tactical arena. 4K 120fps · Ray Tracing · Neural Combat 
+                <i class="fas fa-crown" style="color:gold;"></i>
+            </p>
+            <button class="cta-button" onclick="alert('进入游戏 · 信号已发送 ！')">▶ 立即开玩</button>
+        </section>
+
+        <!-- 动态卡片网格 - 游戏列表 -->
+        <h2 class="section-title"><i class="fas fa-cube"></i> 热门特供 <i class="fas fa-cube"></i></h2>
+        <div class="game-grid">
+            <div class="game-card">
+                <div class="card-icon"><i class="fas fa-robot"></i></div>
+                <h3>MECHA RISING</h3>
+                <p>定制你的战争机甲，在废墟都市执行超高速突击。支持跨平台进度同步。</p>
+                <div class="meta-tags">
+                    <span class="tag">动作</span>
+                    <span class="tag">多人</span>
+                    <span class="tag">机甲</span>
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="card-icon"><i class="fas fa-dragon"></i></div>
+                <h3>FANTASY CORE</h3>
+                <p>大型多人在线魔法世界，驭龙飞行，攻城略地。次世代幻灵引擎。</p>
+                <div class="meta-tags">
+                    <span class="tag">MMO</span>
+                    <span class="tag">龙</span>
+                    <span class="tag">开放世界</span>
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="card-icon"><i class="fas fa-ghost"></i></div>
+                <h3>GHOST WIRE: TOKYO</h3>
+                <p>赛博咒术折叠，隐身于霓虹暗巷，对抗妖魔。沉浸式光追恐怖。</p>
+                <div class="meta-tags">
+                    <span class="tag">恐怖</span>
+                    <span class="tag">潜行</span>
+                    <span class="tag">咒术</span>
+                </div>
+            </div>
+            <div class="game-card">
+                <div class="card-icon"><i class="fas fa-car"></i></div>
+                <h3>NIGHT RACER X</h3>
+                <p>反重力赛车，在光带城市上空以1600km/h狂飙。破坏性武器系统。</p>
+                <div class="meta-tags">
+                    <span class="tag">竞速</span>
+                    <span class="tag">射击</span>
+                    <span class="tag">VR</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 实时在线玩家计数器 (假数据，但炫酷) -->
+        <div class="live-stats">
+            <div class="stat-item">
+                <div class="stat-value">2.4M</div>
+                <div class="stat-label"><i class="fas fa-users"></i> 同时在线</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">187</div>
+                <div class="stat-label"><i class="fas fa-trophy"></i> 职业战队</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value">24/7</div>
+                <div class="stat-label"><i class="fas fa-stream"></i> 直播频道</div>
+            </div>
+        </div>
+
+        <!-- 预购条幅 视觉强烈 -->
+        <div class="preorder-banner">
+            <div class="preorder-text">
+                <i class="fas fa-star"></i> 暗域限定版 <br>
+                <small>含独家皮肤 + 原声带 + 提前48小时入场</small>
+            </div>
+            <button class="neo-button" onclick="alert('进入超空间预购…… 信号加强！')">预购现在</button>
+        </div>
+
+        <!-- 页脚 -->
+        <footer>
+            <div>© 2025 NEBULACORE INTERACTIVE.  <span style="color: cyan;">ALL RIGHTS RESERVED.</span></div>
+            <div class="social">
+                <i class="fab fa-discord"></i>
+                <i class="fab fa-twitter"></i>
+                <i class="fab fa-twitch"></i>
+                <i class="fab fa-instagram"></i>
+                <i class="fab fa-tiktok"></i>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 粒子背景动画脚本 (canvas 生成赛博网格+光点) -->
+    <script>
+        (function() {
+            const canvas = document.getElementById('cyber-canvas');
+            const ctx = canvas.getContext('2d');
+            let width, height;
+            let particles = [];
+            const PARTICLE_COUNT = 100;
+
+            function initParticles() {
+                particles = [];
+                for (let i = 0; i < PARTICLE_COUNT; i++) {
+                    particles.push({
+                        x: Math.random() * width,
+                        y: Math.random() * height,
+                        size: Math.random() * 2.2 + 0.8,
+                        speedX: (Math.random() - 0.5) * 0.8,
+                        speedY: (Math.random() - 0.5) * 0.6,
+                        color: `rgba(${100 + Math.random()*155}, ${150 + Math.random()*105}, 255, ${Math.random()*0.6+0.2})`
+                    });
+                }
+            }
+
+            function resizeCanvas() {
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width;
+                canvas.height = height;
+                initParticles();
+            }
+
+            function drawGrid() {
+                if (!ctx) return;
+                const step = 45;  // 网格间距
+                ctx.strokeStyle = '#00ffff';
+                ctx.lineWidth = 0.4;
+                ctx.globalAlpha = 0.2;
+
+                // 绘制垂直线 + 光晕
+                for (let x = 0; x < width; x += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(x, 0);
+                    ctx.lineTo(x, height);
+                    ctx.strokeStyle = '#0ff';
+                    ctx.stroke();
+
+                    // 添加小节点光点
+                    ctx.fillStyle = '#9cf';
+                    ctx.globalAlpha = 0.4;
+                    ctx.beginPath();
+                    ctx.arc(x, (height * 0.3 + Math.sin(Date.now()*0.001 + x)*30) % height, 2, 0, 2*Math.PI);
+                    ctx.fill();
+                }
+                // 水平线
+                for (let y = 0; y < height; y += step) {
+                    ctx.beginPath();
+                    ctx.moveTo(0, y);
+                    ctx.lineTo(width, y);
+                    ctx.strokeStyle = '#f0f';
+                    ctx.stroke();
+
+                    ctx.fillStyle = '#f6f';
+                    ctx.globalAlpha = 0.2;
+                    ctx.beginPath();
+                    ctx.arc((width * 0.7 + Math.cos(Date.now()*0.002 + y)*40) % width, y, 1.8, 0, 2*Math.PI);
+                    ctx.fill();
+                }
+
+                // 随机动态扫描线
+                ctx.globalAlpha = 0.1;
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 1;
+                for (let s = 0; s < 5; s++) {
+                    let yOffset = (Date.now() * 0.05 + s * 80) % height;
+                    ctx.beginPath();
+                    ctx.moveTo(0, yOffset);
+                    ctx.lineTo(width, yOffset);
+                    ctx.strokeStyle = 'cyan';
+                    ctx.stroke();
+                }
+            }
+
+            function drawParticles() {
+                if (!ctx || !particles.length) return;
+                for (let p of particles) {
+                    ctx.globalAlpha = 0.8;
+                    ctx.fillStyle = p.color;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                    ctx.fill();
+                    // 移动
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+
+                    // 边界重置
+                    if (p.x < 0) p.x = width;
+                    if (p.x > width) p.x = 0;
+                    if (p.y < 0) p.y = height;
+                    if (p.y > height) p.y = 0;
+                }
+            }
+
+            function animateBackground() {
+                if (!ctx) return;
+                ctx.clearRect(0, 0, width, height);
+
+                // 半透明黑色遮罩，制造拖尾效果
+                ctx.fillStyle = '#030514';
+                ctx.globalAlpha = 0.15;
+                ctx.fillRect(0, 0, width, height);
+
+                drawGrid();
+                drawParticles();
+
+                requestAnimationFrame(animateBackground);
+            }
+
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            animateBackground();
+
+            // 可选添加闪烁光点
+            setInterval(() => {
+                // 动态什么都不做，canvas已经在动画
+            }, 100);
+        })();
+    </script>
+
+    <!-- 加一个悬浮的小装饰（极客风）-->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 99; background: rgba(0,0,0,0.3); border-radius: 30px; padding: 8px 16px; backdrop-filter: blur(10px); border: 1px solid cyan; color: #0ff; font-size: 0.8rem;">
+        <i class="fas fa-wifi"></i> 延迟 7ms  <i class="fas fa-shield-alt" style="margin-left:10px;"></i> 安全接入
+    </div>
+</body>
+</html>
