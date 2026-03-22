@@ -97,7 +97,7 @@ private:
         _uri = g_wwwroot + _uri;
 
         auto pos = _uri.rfind(suffixsep);
-        if (!pos == std::string::npos)
+        if (pos == std::string::npos) // 多了一个感叹号   刚刚是这样写的 !pos == std::string::npos
         {
             _suffix = ".html";
         }
@@ -129,6 +129,7 @@ private:
                 }
                 std::string key = header_line.substr(0, pos);
                 std::string value = header_line.substr(pos + headersep.size());
+                std::cout << "[" << key << ":" << value <<  "]\n";
                 _header.insert({key, value});
             }
         } while (header_line != linesep);
@@ -147,8 +148,9 @@ private:
             }
             else
             {
-                _text = _uri.substr(pos + argsep.size());
-                _uri = _uri.substr(0, pos);
+                std::string temp = _uri;
+                _uri = temp.substr(0, pos);
+                _text = temp.substr(pos + argsep.size());
             }
         }
         else
@@ -266,7 +268,7 @@ public:
     {
         _text = content;
     }
-    int BodeSize()
+    int BodySize()
     {
         return _text.size();
     }
