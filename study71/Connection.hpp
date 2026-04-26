@@ -65,6 +65,7 @@ protected:
     std::string _inbuffer;  //接收缓冲区
     std::string _outbuffer;  //发送缓冲区
     time_t _active_time;  //活跃时间
+    //int heartbeat_cnt;
 
     InetAddr _clientaddr;
 

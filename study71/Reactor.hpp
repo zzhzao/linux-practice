@@ -104,7 +104,7 @@ public:
             //DebugPrint();
 
             //链接管理
-            CheckExpriedLink();
+            timeout = CheckExpriedLink();
         }
     }
     void DebugPrint()
@@ -155,6 +155,7 @@ private:
     std::unique_ptr<Epoller> _epoller;
     struct epoll_event revs[grevs_num];
     std::unordered_map<int, std::shared_ptr<Connection>> _connections;
+    //一个对象IOManager,并不只能属于一种结构。
 };
 
 #endif

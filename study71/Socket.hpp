@@ -80,7 +80,7 @@ namespace NS_SOCKET_MODULE
                 exit(SOCKET_ERR);
             }
             int opt = 1;
-            setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt));
+            setsockopt(_sockfd, SOL_SOCKET, SO_REUSEADDR|SO_REUSEPORT, &opt, sizeof(opt));
             SetNonBlock(_sockfd);
         }
         void BindSocketOrDie(uint16_t port) override
