@@ -74,13 +74,37 @@ public:
             break;
         }
     }
+    int CheckExpriedLink()
+    {
+        // 一个链接如果超过100s没有活动，这个链接我就把它过期，关掉
+        int timeout = 100000;
+        time_t currenttime = time(nullptr);
+        for(auto & conn:_connections)
+        {
+            time_t last_active = conn.second->lastActiveTime();
+            time_t timediff = currenttime - last_active;
+            if(timediff > 100000)
+            {
+                DelConnection(conn.second->Sockfd());
+            }
+            time_t expiredtime = 100000 - timediff;
+            if(timeout > expiredtime)
+            {
+                timeout = expiredtime;
+            }
+        }
+        return timeout;
+    }
     void Loop()
     {
         int timeout = 2000;
         while (true)
         {
             LoopOnce(timeout);
-            DebugPrint();
+            //DebugPrint();
+
+            //链接管理
+            CheckExpriedLink();
         }
     }
     void DebugPrint()
@@ -114,7 +138,17 @@ public:
     }
     void DelConnection(int sockfd)
     {
-        _connections.erase(sockfd);
+        if(IsLegalConnection(sockfd))
+        {
+            // epoll中移除，穿透内核
+            _epoller->DelEvents(sockfd);
+            // 关闭文件描述符
+            _connections[sockfd]->Close();
+            // _connections 移除
+            _connections.erase(sockfd);
+
+        }
+
     }
 
 private:

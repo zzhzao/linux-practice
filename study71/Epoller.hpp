@@ -53,6 +53,10 @@ public:
     {
         return EpollCtl(sockfd,EPOLL_CTL_MOD,events);
     } 
+    bool DelEvents(int sockfd)
+    {
+        return EpollCtl(sockfd,EPOLL_CTL_DEL,0);
+    }
     ~Epoller()
     {
         if(_epfd > 0)

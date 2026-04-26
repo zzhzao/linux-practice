@@ -16,6 +16,10 @@ public:
     {}
     Connection(int sockfd,uint32_t events):_sockfd(sockfd),_events(events),_active_time(time(nullptr))
     {}
+    time_t lastActiveTime()
+    {
+        return _active_time;
+    }
     void Active()
     {
         _active_time = time(nullptr);
@@ -31,6 +35,14 @@ public:
     int Sockfd()
     {
         return _sockfd;
+    }
+    void Close()
+    {
+        if(_sockfd >= 0)
+        {
+            close(_sockfd);
+            _sockfd = -1;
+        }
     }
     void InitAddr(const InetAddr& addr)
     {

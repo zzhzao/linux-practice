@@ -13,10 +13,12 @@ class IOManager : public Connection
 public:
     IOManager(int sockfd, uint32_t events, on_message_t on_message) : Connection(sockfd, events), _on_message(on_message)
     {
+        Active();
     }
     ~IOManager() {}
     int Sender() override
     {
+        Active();
         while (true)
         {
             ssize_t n = send(_sockfd, _outbuffer.c_str(), _outbuffer.size(), 0);
@@ -59,6 +61,7 @@ public:
     }
     int Recver() override
     {
+        Active();
         LOG(LogLevel::DEBUG) << "事件派发到了IOManager";
         // 实现非阻塞读取
         char buffer[buffersize];
@@ -104,15 +107,26 @@ public:
             _outbuffer += _on_message(_inbuffer);
         }
 
-        if (!_outbuffer.empty())
+        //最佳实践   1
+        // if (!_outbuffer.empty())
+        // {
+        //     Sender();
+        // }
+
+        if(!_outbuffer.empty())
         {
-            Sender();
+            R->EnableReadWrite(_sockfd,true,true);
         }
+
+
 
         return _inbuffer.size();
     }
     int Excepter() override
     {
+        //归一化异常处理
+        LOG(LogLevel::WARNING) << "errno : "<< errno << strerror(errno);
+        R->DelConnection(_sockfd);
         return 0;
     }
 
